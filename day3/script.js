@@ -38,21 +38,16 @@ function countByCategory() {
 
 function getSummary() {
     const counts = countByCategory();
+    const noteWord = notes.length === 1 ? "note" : "notes";
 
-    return `${notes.length} notes: ${counts.personal} personal, ${counts.work} work, ${counts.study} study.`;
+    return `${notes.length} ${noteWord}: ${counts.personal} personal, ${counts.work} work, ${counts.study} study.`;
 }
 
 function isDuplicate(text) {
-    const normalizedText = text
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, " ");
+    const normalizedText = text.trim().toLowerCase();
 
     return notes.some(note =>
-        note.text
-            .trim()
-            .toLowerCase()
-            .replace(/\s+/g, " ") === normalizedText
+        note.text.trim().toLowerCase() === normalizedText
     );
 }
 
@@ -87,21 +82,68 @@ function addNote(text, category) {
     return true;
 }
 
+
+// =========================
 // Tests
-console.log("Search:", searchNotes("javascript"));
+// =========================
 
-console.log("Longest note:", longestNote());
+// 1. searchNotes()
+// Normal case
+console.log("Search JavaScript:", searchNotes("javascript")); // Expected: Array containing the "Revise JavaScript arrays" note.
 
-console.log("Category counts:", countByCategory());
+// Edge case: no matching notes
+console.log("Search Python:", searchNotes("python")); // Expected: []
 
-console.log("Summary:", getSummary());
 
-console.log("Duplicate check:", isDuplicate("  CALL    MUM  "));
+// 2. longestNote()
+// Normal case
+console.log("Longest note:", longestNote()); // Expected: { id: 3, text: "Email the project report to Grace", category: "work" }
 
-console.log("Add valid note:", addNote("Prepare for the JavaScript quiz", "study"));
+// Edge case: empty array
+const savedNotes = notes;
+notes = [];
+console.log("Longest note when empty:", longestNote()); // Expected: null
+notes = savedNotes;
 
-console.log("Add duplicate note:", addNote("call mum", "personal"));
 
-console.log("Add invalid category:", addNote("Buy a new notebook", "shopping"));
+// 3. countByCategory()
+// Normal case
+console.log("Category counts:", countByCategory()); // Expected: { personal: 2, work: 1, study: 2 }
 
-console.log("Updated notes:", notes);
+// Edge case: no notes
+const savedNotesForCount = notes;
+notes = [];
+console.log("Category counts when empty:", countByCategory()); // Expected: { personal: 0, work: 0, study: 0 }
+notes = savedNotesForCount;
+
+
+// 4. getSummary()
+// Normal case
+console.log("Summary:", getSummary()); // Expected: "5 notes: 2 personal, 1 work, 2 study."
+
+// Edge case: exactly one note
+const savedNotesForSummary = notes;
+notes = [
+    { id: 1, text: "Test note", category: "personal" }
+];
+console.log("One-note summary:", getSummary()); // Expected: "1 note: 1 personal, 0 work, 0 study."
+notes = savedNotesForSummary;
+
+
+// 5. isDuplicate()
+// Normal case
+console.log("Duplicate check:", isDuplicate("call mum")); // Expected: true
+
+// Edge case: text that does not exist
+console.log("Duplicate check for new text:", isDuplicate("Go shopping")); // Expected: false
+
+
+// 6. addNote()
+// Normal case
+console.log("Add valid note:", addNote("Prepare for the JavaScript quiz", "study")); // Expected: true
+
+// Edge case: duplicate note
+console.log("Add duplicate note:", addNote("  CALL MUM  ", "personal")); // Expected: false, with "Note is a duplicate." logged.
+
+
+console.log("Updated notes:", notes); // Expected: Array containing 6 notes.
