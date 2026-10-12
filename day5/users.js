@@ -23,7 +23,8 @@ async function loadUsers() {
         users = await response.json();
 
         renderUsers(users);
-        status.textContent = `Successfully loaded ${users.length} users.`;
+        status.textContent =
+               `Success! Status: ${response.status} OK. Loaded ${users.length} users.`;
     } catch (error) {
         users = [];
         usersList.replaceChildren();
